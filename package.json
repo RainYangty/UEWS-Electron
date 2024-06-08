@@ -1,0 +1,11 @@
+{
+  "name": "uews-electron",
+  "version": "1.0.0",
+  "description": "UEWS App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "RainYang",
+  "license": "MIT"
+}
