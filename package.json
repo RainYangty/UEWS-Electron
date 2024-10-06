@@ -1,0 +1,14 @@
+{
+  "name": "uews-electron",
+  "version": "1.0.0",
+  "description": "Unofficial Earthquake (Early) Warning System",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "RainYang",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
