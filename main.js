@@ -13,12 +13,10 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1300,//窗口宽度
         height: 800,//窗口高度
-        autoHideMenuBar: true,//自动隐藏菜单档
+        autoHideMenuBar: false,//自动隐藏菜单档
         alwaysOnTop: false,//置顶
         webPreferences: {
             //partition: String(+new Date())
-            nodeIntegration: true, // 允许渲染器进程使用Node.js
-            contextIsolation: false,
         },
 
     })
@@ -63,7 +61,7 @@ app.on('ready', () => {
         }
     })
     // 设置托盘
-    const tray = new Tray('image.png')
+    const tray = new Tray('./src/image.png')
 
     tray.setToolTip("UEWS")
 
