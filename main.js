@@ -13,7 +13,7 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1300,//窗口宽度
         height: 800,//窗口高度
-        autoHideMenuBar: ture,//自动隐藏菜单档
+        autoHideMenuBar: true,//自动隐藏菜单档
         alwaysOnTop: false,//置顶
         webPreferences: {
             //partition: String(+new Date())
