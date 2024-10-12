@@ -3,6 +3,7 @@ const { screen } = require('electron')
 const { session } = require('electron')
 const { Tray, Menu } = require('electron')
 const ipcMain = require('electron').ipcMain;
+const path = require('path')
 
 var localLat, localLon, minint;
 
@@ -11,6 +12,7 @@ let notificationWindow, win;
 function createWindow() {
     //当app准备好后，执行createWindow创建窗口
     win = new BrowserWindow({
+        title: "Unofficial Earthquake Warning (Monitoring) System",
         width: 1300,//窗口宽度
         height: 800,//窗口高度
         autoHideMenuBar: true,//自动隐藏菜单档
@@ -61,17 +63,20 @@ app.on('ready', () => {
         }
     })
     // 设置托盘
-    const tray = new Tray('./src/image.png')
+    const tray = new Tray(path.join(path.dirname(app.getPath('exe')), '/resources/app.asar/src/image.png'))//发布使用
+    
+    // const tray = new Tray('./src/image.png')
 
-    tray.setToolTip("UEWS")
+    tray.setToolTip("UEWS\n单击试听预警声音")
 
     const contextMenu = Menu.buildFromTemplate([
-        { label: '退出', type: 'radio', role: 'quit' }
+        { label: '退出', role: 'quit' }
     ])
 
     tray.setContextMenu(contextMenu)
 
     tray.on('click', () => {
+        notificationWindow.webContents.send('check', 'check')
         try {
             win.show()
         }
@@ -98,6 +103,13 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
 
 ipcMain.on('warning', function (event, arg) {
     notificationWindow.show()
+    try {
+        win.show()
+    }
+    catch (error) {
+        createWindow()
+    }
+
     console.log("warnings!")
 });
 
@@ -135,3 +147,20 @@ ipcMain.on("ask", function (event, arg) {
             console.log(error)
         })
 });
+
+// 开机是否自启动
+const isDevelopment = process.env.NODE_ENV == "development";
+//注意：非开发环境
+if (!isDevelopment) {
+    if (process.platform === "darwin") {
+        app.setLoginItemSettings({
+            openAtLogin: true,//是否开机启动
+            openAsHidden: true//是否隐藏主窗体，保留托盘位置
+        });
+    } else {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            openAsHidden: true,
+        });
+    }
+}

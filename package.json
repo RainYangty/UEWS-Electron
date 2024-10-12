@@ -4,11 +4,43 @@
   "description": "Unofficial Earthquake (Early) Warning System",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "dev": "electron .",
+    "build-64": "electron-builder --win --x64",
+    "build-linux": "electron-builder --linux",
+    "build-mac": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^32.1.2",
+    "electron-builder": "^10.17.3"
+  },
+  "extraResources": {
+    "from": "./src/",
+    "to": "/src"
   },
   "author": "RainYang",
   "license": "GPL-3.0",
-  "devDependencies": {
-    "nodemon": "^3.1.7"
+  "keywords": [],
+  "files": [
+    "./src"
+  ],
+  "win": {  
+       "icon": "./src/image.png",
+        "target": [
+          {
+            "target": "nsis",
+            "arch": [
+              "ia32"
+            ]
+          }
+        ]
+    },
+  "nsis": {
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "UEWS-Electron"
+  },
+  "dependencies": {
+    "loudness": "^0.4.2"
   }
 }

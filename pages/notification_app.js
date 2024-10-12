@@ -1,5 +1,6 @@
 const ipcRenderer = require('electron').ipcRenderer;
 const _setInterval = require('timers').setInterval;
+const loudness = window.require('loudness')
 
 ipcRenderer.send('1', 'hello');
 
@@ -58,7 +59,20 @@ ipcRenderer.on('int', (event, data) => {
 var deltatime = 0;
 var currentTimeStamp = 0;
 
+const eew = new Audio();
+eew.src = './EEW.wav';
+
+
 ipcRenderer.send('cancel', 'cancel');
+
+// 设置音量为特定值
+function setVol(vol) {
+    loudness.setVolume(vol)
+}
+// 获取当前音量
+function getVol() {
+    return loudness.getVolume()
+}
 
 const intColor = {
     "0": {
@@ -120,15 +134,14 @@ function settime() //同步时间
     currentTimeStamp = Date.parse(new Date()) + deltatime;
 }
 
-function updatelocation()
-{
+function updatelocation() {
     ipcRenderer.send("ask", "ask");
 }
 
 function sceew() //四川地震局
 {
     var starttime = Date.now();
-    $.getJSON("https://api.wolfx.jp/sc_eew.json?" + Date.now(),//https://api.wolfx.jp/sc_eew.json
+    $.getJSON("https://api.wolfx.jp/sc_eew.json?" + Date.now(),//https://api.wolfx.jp/sc_eew.json http://127.0.0.1:5500/UEWS-Web/sc_eew.json
         function (json) {
             var endtime = Date.now();
             sc_eewLat = json.Latitude;
@@ -157,7 +170,7 @@ function sceew() //四川地震局
             else if (!iclcancel && !sc_eewcancel) {
                 sc_eewcancel = true;
                 //$("#countDown2").css("visibility", "hidden");
-                
+
             }
         });
 }
@@ -182,7 +195,7 @@ function icl() //ICL地震预警网
             iclint0time = calcint0time(iclMagnitude);
             if ((currentTimeStamp - iclStartAt) / 1000 <= iclint0time) {
                 localInt = 0.92 + 1.63 * iclMagnitude - 3.49 * Math.log10(distance);
-                    iclcancel = false;
+                iclcancel = false;
             }
             else if (!iclcancel && sc_eewcancel) {
                 iclcancel = true;
@@ -193,7 +206,7 @@ function icl() //ICL地震预警网
                 iclcancel = true;
                 warningtf = false;
                 //$("#countDown2").css("visibility", "hidden");
-                
+
             }
         });
 }
@@ -236,7 +249,10 @@ function countDown() {
         //setInterval(countdownRun, 1000, Lat, Lon, OriTime);
         if (!warningtf && localInt >= minint) {
             //$("#countDown2").css("visibility", "visible");
-            ipcRenderer.send('warning', 'warning');
+            ipcRenderer.send('warning', Magnitude);
+            //eew.volume = +volume / 100;
+            setVol(100);
+            eew.play();
             if (localInt >= 3.0 && localInt < 5.0) {
                 warningtf = true;
             }
@@ -386,3 +402,8 @@ _setInterval(countdownRun, 1000);
 _setInterval(countDown, 1000);
 _setInterval(getcurrenttime, 10000);
 _setInterval(updatelocation, 60000);
+
+ipcRenderer.on('check', (event, data) => {
+    //eew.volume = +volume / 100;
+    eew.play();
+})
