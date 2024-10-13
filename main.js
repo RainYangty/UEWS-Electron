@@ -64,19 +64,47 @@ app.on('ready', () => {
     })
     // 设置托盘
     const tray = new Tray(path.join(path.dirname(app.getPath('exe')), '/resources/app.asar/src/image.png'))//发布使用
-    
+
     // const tray = new Tray('./src/image.png')
 
-    tray.setToolTip("UEWS\n单击试听预警声音")
+    tray.setToolTip("Unofficial Earthquake Warning (Monitoring) System")
 
     const contextMenu = Menu.buildFromTemplate([
+        {
+            type: 'checkbox',
+            label: '开机启动',
+            checked: app.getLoginItemSettings().openAtLogin,
+            click: function () {
+                if (!app.isPackaged) {
+                    app.setLoginItemSettings({
+                        openAtLogin: !app.getLoginItemSettings().openAtLogin,
+                        openAsHidden: true,
+                        path: process.execPath
+                    })
+                } else {
+                    app.setLoginItemSettings({
+                        openAtLogin: !app.getLoginItemSettings().openAtLogin,
+                        openAsHidden: true
+                    })
+                }
+                console.log(app.getLoginItemSettings().openAtLogin)
+                console.log(!app.isPackaged);
+
+            }
+        },
+        {
+            label: '试听音频',
+            checked: app.getLoginItemSettings().openAtLogin,
+            click: function () {
+                notificationWindow.webContents.send('check', 'check')
+            }
+        },
         { label: '退出', role: 'quit' }
     ])
 
     tray.setContextMenu(contextMenu)
 
     tray.on('click', () => {
-        notificationWindow.webContents.send('check', 'check')
         try {
             win.show()
         }
@@ -148,7 +176,7 @@ ipcMain.on("ask", function (event, arg) {
         })
 });
 
-// 开机是否自启动
+/* // 开机是否自启动
 const isDevelopment = process.env.NODE_ENV == "development";
 //注意：非开发环境
 if (!isDevelopment) {
@@ -163,4 +191,4 @@ if (!isDevelopment) {
             openAsHidden: true,
         });
     }
-}
+} */
